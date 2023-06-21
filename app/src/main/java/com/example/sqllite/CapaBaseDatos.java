@@ -26,6 +26,7 @@ public class CapaBaseDatos extends SQLiteOpenHelper {
     private static final String ID_CONTACTO = "id";
     private static final String NOMBRE_CONTACTO = "nombre";
     private static final String TELEFONO_CONTACTO = "telefono";
+    private static final String EDAD = "edad";
 
     public CapaBaseDatos(Context context) {
         super(context, NOMBRE_BASEDATOS, null, VERSION_BASEDATOS);
@@ -36,7 +37,7 @@ public class CapaBaseDatos extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLA_CONTACTOS + "("
                 + ID_CONTACTO + " INTEGER PRIMARY KEY," + NOMBRE_CONTACTO + " TEXT,"
-                + TELEFONO_CONTACTO + " TEXT" + ")";
+                + TELEFONO_CONTACTO + " TEXT" + EDAD+ "INTEGER"+ ")";
         db.execSQL(CREATE_CONTACTS_TABLE);
 
     }
@@ -57,8 +58,6 @@ public class CapaBaseDatos extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(NOMBRE_CONTACTO, contact.getNombre());
         values.put(TELEFONO_CONTACTO, contact.getTelefono());
-
-
         db.insert(TABLA_CONTACTOS, null, values);
         db.close();
     }
