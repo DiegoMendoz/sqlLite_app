@@ -13,7 +13,7 @@
         android:theme="@style/Theme.SqlLite"
         tools:targetApi="31" >
         <activity android:name=".AddActivity"
-            android:label="ADD contact"
+            android:label="Agregar contacto"
             android:parentActivityName=".MainActivity"
             android:exported="true"/>
         <activity

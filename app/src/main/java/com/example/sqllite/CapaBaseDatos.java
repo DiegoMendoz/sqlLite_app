@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +14,8 @@ import java.util.List;
  * Created by Carlos Ruano.
  */
 public class CapaBaseDatos extends SQLiteOpenHelper {
-
-    private static final int VERSION_BASEDATOS = 4;
+    private Context context;
+    private static final int VERSION_BASEDATOS = 6;
 
     // Nombre de la BD
     private static final String NOMBRE_BASEDATOS = "contactosDB";
@@ -25,21 +26,25 @@ public class CapaBaseDatos extends SQLiteOpenHelper {
     // Nombres de las Columnas
     private static final String ID_CONTACTO = "id";
     private static final String NOMBRE_CONTACTO = "nombre";
+    private static final String APELLIDO_CONTACTO = "apellido";
     private static final String TELEFONO_CONTACTO = "telefono";
+    private static final String DOMICILIO_CONTACTO = "domicilio";
+    private static final String CORREO_ELECTRONICO = "correo_electronico";
     private static final String EDAD = "edad";
 
     public CapaBaseDatos(Context context) {
         super(context, NOMBRE_BASEDATOS, null, VERSION_BASEDATOS);
+        this.context = context;
     }
-
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLA_CONTACTOS + "("
                 + ID_CONTACTO + " INTEGER PRIMARY KEY," + NOMBRE_CONTACTO + " TEXT,"
-                + TELEFONO_CONTACTO + " TEXT" + EDAD+ "INTEGER"+ ")";
+                + APELLIDO_CONTACTO + " TEXT," + TELEFONO_CONTACTO + " TEXT,"
+                + DOMICILIO_CONTACTO + " TEXT," + CORREO_ELECTRONICO + " TEXT,"
+                + EDAD + " INTEGER" + ")";
         db.execSQL(CREATE_CONTACTS_TABLE);
-
     }
 
     @Override
@@ -48,58 +53,80 @@ public class CapaBaseDatos extends SQLiteOpenHelper {
 
         // Crear las tablas otra vez
         onCreate(db);
-
     }
 
     // Para agregar un nuevo registro
-    void addContacto(Contactos contact) {
+    public void addContacto(Contactos contact) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(NOMBRE_CONTACTO, contact.getNombre());
+        values.put(APELLIDO_CONTACTO, contact.getApellido());
         values.put(TELEFONO_CONTACTO, contact.getTelefono());
-        db.insert(TABLA_CONTACTOS, null, values);
+        values.put(DOMICILIO_CONTACTO, contact.getDomicilio());
+        values.put(CORREO_ELECTRONICO, contact.getCorreoElectronico());
+        values.put(EDAD, contact.getEdad());
+
+        long result = db.insert(TABLA_CONTACTOS, null, values);
         db.close();
+
+        if (result != -1) {
+            Toast.makeText(context, "Subido con éxito", Toast.LENGTH_SHORT).show();
+
+        } else {
+            Toast.makeText(context, "Error al subir", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // Obtener un solo contacto
     public Contactos getContacto(int id) {
-
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String[] campos = new String[] {ID_CONTACTO,NOMBRE_CONTACTO, TELEFONO_CONTACTO};
-        String[] args =  new String[] { String.valueOf(id)};
+        String[] campos = new String[]{ID_CONTACTO, NOMBRE_CONTACTO, APELLIDO_CONTACTO,
+                TELEFONO_CONTACTO, DOMICILIO_CONTACTO, CORREO_ELECTRONICO, EDAD};
+        String[] args = new String[]{String.valueOf(id)};
 
-        Cursor cursor = db.query(TABLA_CONTACTOS, campos, ID_CONTACTO + "=?",args
-               , null, null, null, null);
+        Cursor cursor = db.query(TABLA_CONTACTOS, campos, ID_CONTACTO + "=?", args,
+                null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
         Contactos contact = new Contactos(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), cursor.getString(2));
+                cursor.getString(1), cursor.getString(2), cursor.getString(3),
+                cursor.getString(4), cursor.getString(5), cursor.getString(6));
 
         return contact;
     }
 
-    // todos los contactos
+    // Obtener todos los contactos
     public List<Contactos> getContactos() {
+        List<Contactos> contactList = new ArrayList<>();
 
-        List<Contactos> contactList = new ArrayList<Contactos>();
-
-        String[] campos = new String[] {ID_CONTACTO,NOMBRE_CONTACTO, TELEFONO_CONTACTO};
+        String[] campos = new String[]{
+                ID_CONTACTO, NOMBRE_CONTACTO, APELLIDO_CONTACTO,
+                TELEFONO_CONTACTO, DOMICILIO_CONTACTO, CORREO_ELECTRONICO, EDAD
+        };
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor cursor = db.query(TABLA_CONTACTOS, campos, null, null, null, null, null);
 
         if (cursor.moveToFirst()) {
             do {
-                Contactos contact = new Contactos();
-                contact.setID(Integer.parseInt(cursor.getString(0)));
-                contact.setNombre(cursor.getString(1));
-                contact.setTelefono(cursor.getString(2));
+                Contactos contact = new Contactos(
+                        Integer.parseInt(cursor.getString(0)),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getString(6)
+                );
                 contactList.add(contact);
             } while (cursor.moveToNext());
         }
+
+        cursor.close();
+        db.close();
 
         return contactList;
     }
@@ -108,33 +135,40 @@ public class CapaBaseDatos extends SQLiteOpenHelper {
     public int updateContacto(Contactos contact) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        String[] idContacto = new String[] { String.valueOf(contact.getID()) };
-
         ContentValues values = new ContentValues();
         values.put(NOMBRE_CONTACTO, contact.getNombre());
+        values.put(APELLIDO_CONTACTO, contact.getApellido());
         values.put(TELEFONO_CONTACTO, contact.getTelefono());
+        values.put(DOMICILIO_CONTACTO, contact.getDomicilio());
+        values.put(CORREO_ELECTRONICO, contact.getCorreoElectronico());
+        values.put(EDAD, contact.getEdad());
 
+        String[] idContacto = new String[]{String.valueOf(contact.getID())};
 
-        return db.update(TABLA_CONTACTOS, values, ID_CONTACTO + " = ?",idContacto );
+        int rowsAffected = db.update(TABLA_CONTACTOS, values, ID_CONTACTO + " = ?", idContacto);
+
+        db.close();
+
+        return rowsAffected;
     }
 
     // Eliminar Contacto
     public void deleteContacto(Contactos contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLA_CONTACTOS, ID_CONTACTO + " = ?",
-                new String[] { String.valueOf(contact.getID()) });
+                new String[]{String.valueOf(contact.getID())});
         db.close();
     }
-
 
     // Total de Contactos
     public int getTotalContactos() {
         String countQuery = "SELECT  * FROM " + TABLA_CONTACTOS;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
         cursor.close();
+        db.close();
 
-
-        return cursor.getCount();
+        return count;
     }
 }
