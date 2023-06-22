@@ -162,10 +162,14 @@ Cursor readAllData(){
     }
 
     // Eliminar Contacto
-    public void deleteContacto(Contactos contact) {
+    public void deleteContacto(int contactId ) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLA_CONTACTOS, ID_CONTACTO + " = ?",
-                new String[]{String.valueOf(contact.getID())});
+        long result = db.delete(TABLA_CONTACTOS, ID_CONTACTO + " = ?", new String[]{String.valueOf(contactId)});
+        if (result == -1) {
+            Toast.makeText(context, "Error al intentar eliminar.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Eliminado satisfactoriamente.", Toast.LENGTH_SHORT).show();
+        }
         db.close();
     }
 

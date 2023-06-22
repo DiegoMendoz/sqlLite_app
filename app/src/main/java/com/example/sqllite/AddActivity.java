@@ -1,6 +1,8 @@
 package com.example.sqllite;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -56,13 +58,10 @@ public class AddActivity extends AppCompatActivity {
                                 // Mostrar un mensaje de éxito
                                 Toast.makeText(AddActivity.this, "Contacto agregado con éxito", Toast.LENGTH_SHORT).show();
 
-                                // Limpiar los campos de entrada
-                                Nombre.setText("");
-                                Apellidos.setText("");
-                                Telefono.setText("");
-                                Edad.setText("");
-                                Domicilio.setText("");
-                                Correo_Electronico.setText("");
+                                // Redireccionar a MainActivity
+                                Intent intent = new Intent(AddActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish(); // Finalizar AddActivity para evitar volver atrás
                             } else {
                                 // Mostrar un mensaje de error para la edad inválida
                                 Toast.makeText(AddActivity.this, "Ingresa una edad válida (hasta 3 dígitos y no negativa)", Toast.LENGTH_SHORT).show();

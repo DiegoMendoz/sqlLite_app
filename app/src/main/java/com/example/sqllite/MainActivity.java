@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.view.View;
 import android.os.Bundle;
+
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -27,13 +28,13 @@ CustomAdapter customAdapter;
 
         recyclerView = findViewById(R.id.reyclerView);
         add_button=findViewById(R.id.add_button);
+
         add_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
                 Intent intent = new Intent(MainActivity.this,AddActivity.class);
                 startActivity(intent);
-
-
+                updateAdapter();
             }
         });
         myDB = new CapaBaseDatos(MainActivity.this);
@@ -53,20 +54,39 @@ CustomAdapter customAdapter;
 
     }
     void storeDataInArrays(){
+        contactos_id.clear();
+        contactos_nombre.clear();
+        contactos_apellido.clear();
+        contactos_telefono.clear();
+        contactos_correo_electronico.clear();
+        contactos_domicilio.clear();
+        contactos_edad.clear();
+
         Cursor cursor = myDB.readAllData();
-        if(cursor.getCount() == 0){
-            Toast.makeText(this,"No Contactos.",Toast.LENGTH_SHORT).show();
-        }else{
-            while (cursor.moveToNext()){
+        if (cursor.getCount() == 0) {
+            Toast.makeText(this, "No hay contactos.", Toast.LENGTH_SHORT).show();
+        } else {
+            while (cursor.moveToNext()) {
                 contactos_id.add(cursor.getString(0));
-                contactos_nombre.add(cursor.getString(1));
-                contactos_apellido.add(cursor.getString(2));
+                contactos_nombre.add(cursor.getString(2));
+                contactos_apellido.add(cursor.getString(1));
                 contactos_telefono.add(cursor.getString(3));
                 contactos_correo_electronico.add(cursor.getString(4));
                 contactos_domicilio.add(cursor.getString(5));
                 contactos_edad.add(cursor.getString(6));
-
             }
         }
+    }
+    private void updateAdapter() {
+        contactos_id.clear();
+        contactos_nombre.clear();
+        contactos_apellido.clear();
+        contactos_telefono.clear();
+        contactos_domicilio.clear();
+        contactos_correo_electronico.clear();
+        contactos_edad.clear();
+
+        storeDataInArrays();
+        customAdapter.notifyDataSetChanged();
     }
 }
