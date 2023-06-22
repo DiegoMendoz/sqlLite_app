@@ -130,7 +130,16 @@ public class CapaBaseDatos extends SQLiteOpenHelper {
 
         return contactList;
     }
+Cursor readAllData(){
+        String  query="SELECT * FROM " + TABLA_CONTACTOS;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor =null;
+        if(db != null){
+            cursor = db.rawQuery(query,null);
+        }
+        return cursor;
 
+}
     // Actualizar Contacto
     public int updateContacto(Contactos contact) {
         SQLiteDatabase db = this.getWritableDatabase();
