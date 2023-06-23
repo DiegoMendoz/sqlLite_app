@@ -184,4 +184,20 @@ Cursor readAllData(){
 
         return count;
     }
+    public boolean existeContacto(String nombre, String apellido) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] campos = new String[]{ID_CONTACTO};
+        String[] args = new String[]{nombre, apellido};
+
+        String query = "SELECT " + ID_CONTACTO + " FROM " + TABLA_CONTACTOS +
+                " WHERE " + NOMBRE_CONTACTO + " = ? AND " + APELLIDO_CONTACTO + " = ?";
+
+        Cursor cursor = db.rawQuery(query, args);
+        boolean existe = cursor.moveToFirst();
+        cursor.close();
+        db.close();
+
+        return existe;
+    }
 }

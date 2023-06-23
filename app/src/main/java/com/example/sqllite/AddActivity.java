@@ -40,43 +40,86 @@ public class AddActivity extends AppCompatActivity {
                 String domicilio = Domicilio.getText().toString().trim();
                 String correo_electronico = Correo_Electronico.getText().toString().trim();
 
+                // Limpiar los errores previos
+                Nombre.setError(null);
+                Apellidos.setError(null);
+                Telefono.setError(null);
+                Edad.setError(null);
+                Domicilio.setError(null);
+                Correo_Electronico.setError(null);
+
                 // Validar que se hayan ingresado los datos necesarios
-                if (!nombre.isEmpty() && !telefono.isEmpty() && !edad.isEmpty()) {
-                    // Validar el campo de teléfono
-                    if (telefono.matches("[0-9]{8}")) {
-                        // Validar el campo de correo electrónico
-                        if (correo_electronico.matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")) {
-                            // Validar el campo de edad
-                            if (Integer.parseInt(edad) >= 0 && edad.length() <= 3 && !edad.startsWith("-")) {
-                                // Crear un objeto Contactos con los datos
-                                Contactos contact = new Contactos(nombre, apellido, telefono, edad, domicilio, correo_electronico);
+                boolean hayErrores = false;
 
-                                // Agregar el contacto a la base de datos
-                                CapaBaseDatos myDB = new CapaBaseDatos(AddActivity.this);
-                                myDB.addContacto(contact);
+                if (nombre.isEmpty()) {
+                    hayErrores = true;
+                    Nombre.setError("Ingresa un nombre");
+                } else if (!nombre.matches("[a-zA-Z ]+")) {
+                    hayErrores = true;
+                    Nombre.setError("No se permiten números ni caracteres especiales");
+                }
 
-                                // Mostrar un mensaje de éxito
-                                Toast.makeText(AddActivity.this, "Contacto agregado con éxito", Toast.LENGTH_SHORT).show();
+                if (apellido.isEmpty()) {
+                    hayErrores = true;
+                    Apellidos.setError("Ingresa los apellidos");
+                } else if (!apellido.matches("[a-zA-Z ]+")) {
+                    hayErrores = true;
+                    Apellidos.setError("No se permiten números ni caracteres especiales");
+                }
 
-                                // Redireccionar a MainActivity
-                                Intent intent = new Intent(AddActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                finish(); // Finalizar AddActivity para evitar volver atrás
-                            } else {
-                                // Mostrar un mensaje de error para la edad inválida
-                                Toast.makeText(AddActivity.this, "Ingresa una edad válida (hasta 3 dígitos y no negativa)", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            // Mostrar un mensaje de error para el correo electrónico inválido
-                            Toast.makeText(AddActivity.this, "Ingresa un correo electrónico válido", Toast.LENGTH_SHORT).show();
-                        }
+                if (telefono.isEmpty()) {
+                    hayErrores = true;
+                    Telefono.setError("Ingresa un número de teléfono");
+                } else if (!telefono.matches("[0-9]{8}")) {
+                    hayErrores = true;
+                    Telefono.setError("Ingresa un número de teléfono válido (8 dígitos)");
+                }
+
+                if (edad.isEmpty()) {
+                    hayErrores = true;
+                    Edad.setError("Ingresa la edad");
+                } else if (!edad.matches("[1-9][0-9]{0,2}")) {
+                    hayErrores = true;
+                    Edad.setError("Ingresa una edad válida (hasta 3 dígitos y no negativa)");
+                } else if (edad.startsWith("0")) {
+                    hayErrores = true;
+                    Edad.setError("Ingresa una edad válida (no puede empezar con 0)");
+                }
+
+                if (domicilio.isEmpty()) {
+                    hayErrores = true;
+                    Domicilio.setError("Ingresa el domicilio");
+                }
+
+                if (correo_electronico.isEmpty()) {
+                    hayErrores = true;
+                    Correo_Electronico.setError("Ingresa el correo electrónico");
+                } else if (!correo_electronico.matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")) {
+                    hayErrores = true;
+                    Correo_Electronico.setError("Ingresa un correo electrónico válido");
+                }
+
+                if (!hayErrores) {
+                    // Verificar si el contacto ya existe en la base de datos
+                    if (contactoExistente(nombre, apellido)) {
+                        // Mostrar un mensaje de error para el contacto duplicado
+                        Toast.makeText(AddActivity.this, "El contacto ya existe", Toast.LENGTH_SHORT).show();
                     } else {
-                        // Mostrar un mensaje de error para el teléfono inválido
-                        Toast.makeText(AddActivity.this, "Ingresa un número de teléfono válido (8 dígitos)", Toast.LENGTH_SHORT).show();
+                        // Crear un objeto Contactos con los datos
+                        Contactos contact = new Contactos(nombre, apellido, telefono, edad, domicilio, correo_electronico);
+
+                        // Agregar el contacto a la base de datos
+                        CapaBaseDatos myDB = new CapaBaseDatos(AddActivity.this);
+                        myDB.addContacto(contact);
+
+                        // Mostrar un mensaje de éxito
+                        Toast.makeText(AddActivity.this, "Contacto agregado con éxito", Toast.LENGTH_SHORT).show();
+
+                        // Redireccionar a MainActivity
+                        Intent intent = new Intent(AddActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish(); // Finalizar AddActivity para evitar volver atrás
                     }
-                } else {
-                    // Mostrar un mensaje de error para los campos vacíos
-                    Toast.makeText(AddActivity.this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -92,7 +135,20 @@ public class AddActivity extends AppCompatActivity {
                 Edad.setText("");
                 Domicilio.setText("");
                 Correo_Electronico.setText("");
+                // Limpiar los errores
+                Nombre.setError(null);
+                Apellidos.setError(null);
+                Telefono.setError(null);
+                Edad.setError(null);
+                Domicilio.setError(null);
+                Correo_Electronico.setError(null);
             }
         });
+    }
+
+    private boolean contactoExistente(String nombre, String apellido) {
+        // Verificar si el contacto ya existe en la base de datos
+        CapaBaseDatos myDB = new CapaBaseDatos(AddActivity.this);
+        return myDB.existeContacto(nombre, apellido);
     }
 }

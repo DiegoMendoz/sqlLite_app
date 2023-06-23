@@ -79,7 +79,7 @@ holder.contactos_id_txt.setText(String.valueOf(contactos_id.get(position)));
                  public void onClick(View view) {
                      AlertDialog.Builder builder = new AlertDialog.Builder(context);
                      builder.setTitle("Confirmación")
-                             .setMessage("¿Desea eliminar el dato de " +contactos_apellido + contactos_nombre + " con ID " + contactos_id + "?")
+                             .setMessage("¿Desea eliminar el dato de " + contactos_nombre.get(getAdapterPosition()) +" "+ contactos_apellido.get(getAdapterPosition()) + " con ID " + contactos_id.get(getAdapterPosition()) + "?")
                              .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
                                  @Override
                                  public void onClick(DialogInterface dialogInterface, int i) {
