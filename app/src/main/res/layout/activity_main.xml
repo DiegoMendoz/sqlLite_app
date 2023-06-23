@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#808080"
     tools:context=".MainActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_button"
         android:layout_width="55dp"
         android:layout_height="56dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="36dp"
         android:clickable="true"
         android:contentDescription="TODO"
@@ -30,8 +31,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5"
-       >
+        app:layout_constraintVertical_bias="0.5">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -45,7 +45,7 @@
         app:layout_constraintTop_toTopOf="@+id/reyclerView"
         app:srcCompat="@drawable/noun_empty_203873"
         android:alpha="0.1"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/no_data"
@@ -59,5 +59,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/empty_imageview" />
+
+    <LinearLayout
+        android:id="@+id/my_row"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Contenido de my_row -->
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
