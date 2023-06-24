@@ -140,25 +140,31 @@ Cursor readAllData(){
         return cursor;
 
 }
+
+
+
+
+
     // Actualizar Contacto
-    public int updateContacto(Contactos contact) {
+void updateContacto(String id, String nombres, String apellidos, String Domicilio, String correoelectronico, String telefono, String edad) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(NOMBRE_CONTACTO, contact.getNombre());
-        values.put(APELLIDO_CONTACTO, contact.getApellido());
-        values.put(TELEFONO_CONTACTO, contact.getTelefono());
-        values.put(DOMICILIO_CONTACTO, contact.getDomicilio());
-        values.put(CORREO_ELECTRONICO, contact.getCorreoElectronico());
-        values.put(EDAD, contact.getEdad());
+        values.put(NOMBRE_CONTACTO, nombres);
+        values.put(APELLIDO_CONTACTO, apellidos);
+        values.put(DOMICILIO_CONTACTO, Domicilio);
+        values.put(CORREO_ELECTRONICO, correoelectronico);
+        values.put(TELEFONO_CONTACTO, telefono);
+        values.put(EDAD, edad);
 
-        String[] idContacto = new String[]{String.valueOf(contact.getID())};
+    long result=db.update(TABLA_CONTACTOS,values, ID_CONTACTO + "=?",new String[]{id});
+    if(result==-1){
+        Toast.makeText(context, "Fallo al actualizar.", Toast.LENGTH_SHORT).show();
+    }else{
+        Toast.makeText(context, "Actualizacion  exitosa.", Toast.LENGTH_SHORT).show();
 
-        int rowsAffected = db.update(TABLA_CONTACTOS, values, ID_CONTACTO + " = ?", idContacto);
+    }
 
-        db.close();
-
-        return rowsAffected;
     }
 
     // Eliminar Contacto
@@ -172,6 +178,8 @@ Cursor readAllData(){
         }
         db.close();
     }
+
+
 
     // Total de Contactos
     public int getTotalContactos() {

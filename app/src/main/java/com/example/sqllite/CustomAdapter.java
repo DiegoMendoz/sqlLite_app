@@ -1,13 +1,16 @@
 package com.example.sqllite;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,6 +29,8 @@ private ArrayList contactos_id;
     private ArrayList contactos_domicilio;
     private ArrayList contactos_correo_electronico;
     private ArrayList contactos_edad;
+
+
 
 CustomAdapter(Context context, ArrayList contactos_id, ArrayList contactos_apellido, ArrayList contactos_nombre, ArrayList contactos_telefono,ArrayList contactos_correo_electronico){
         this.context = context;
@@ -48,15 +53,25 @@ CustomAdapter(Context context, ArrayList contactos_id, ArrayList contactos_apell
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-holder.contactos_id_txt.setText(String.valueOf(contactos_id.get(position)));
+    public void onBindViewHolder(@NonNull MyViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         holder.contactos_id_txt.setText(String.valueOf(contactos_id.get(position)));
         holder.contactos_nombre_txt.setText(String.valueOf(contactos_nombre.get(position)));
         holder.contactos_apellidos_txt.setText(String.valueOf(contactos_apellido.get(position)));
         holder.contactos_telefono_txt.setText(String.valueOf(contactos_telefono.get(position)));
 
-
+        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, UpdateActivity.class);
+                intent.putExtra("id", String.valueOf(contactos_id.get(position)));
+                intent.putExtra("nombre", String.valueOf(contactos_nombre.get(position)));
+                intent.putExtra("apellido", String.valueOf(contactos_apellido.get(position)));
+                intent.putExtra("telefono", String.valueOf(contactos_telefono.get(position)));
+                context.startActivity(intent);
+            }
+        });
     }
+
 
 
     @Override
@@ -66,6 +81,7 @@ holder.contactos_id_txt.setText(String.valueOf(contactos_id.get(position)));
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
          TextView contactos_id_txt,contactos_nombre_txt,contactos_apellidos_txt,contactos_telefono_txt,contactos_correo_electronico_txt;
+      LinearLayout mainLayout;
         Button delete_button;
          public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -105,7 +121,7 @@ holder.contactos_id_txt.setText(String.valueOf(contactos_id.get(position)));
                              .show();
                  }
              });
-
+mainLayout=itemView.findViewById(R.id.mainLayout);
         }
     }
     void confirmDialog(){
